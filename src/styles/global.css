@@ -1,0 +1,662 @@
+/* ===== Reset ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #ffe6f0, #ffe0cc);
+  color: #333;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== Shared Layout ===== */
+
+.intro-container,
+.level-container,
+.final-container {
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #fff5f8 0%, #ffe6f0 50%, #ffd9e8 100%);
+}
+
+.brochure-content {
+  z-index: 10;
+  position: relative;
+}
+
+.valentine-brochure .brochure-content {
+  z-index: 10;
+  position: relative;
+}
+
+.valentine-title {
+  font-size: 4rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #d63456;
+  text-shadow: 2px 2px 4px rgba(214, 52, 86, 0.1);
+  line-height: 1.2;
+}
+
+.heart-text {
+  background: linear-gradient(135deg, #ff1493, #ff69b4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-style: italic;
+}
+
+.brochure-subtitle {
+  margin: 1.5rem 0 2rem;
+  font-size: 1.3rem;
+  color: #666;
+  opacity: 0.9;
+  max-width: 500px;
+}
+
+.hearts-decoration {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  font-size: 2rem;
+}
+
+.hearts-decoration span {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.hearts-decoration span:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.hearts-decoration span:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+.valentine-btn {
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: 16px 40px;
+  background: linear-gradient(135deg, #ff1493, #ff69b4);
+  margin-top: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(255, 20, 147, 0.3);
+}
+
+.valentine-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 40px rgba(255, 20, 147, 0.5);
+}
+
+/* Floating Hearts */
+.floating-heart {
+  position: fixed;
+  font-size: 2rem;
+  pointer-events: none;
+  z-index: 1;
+  left: 50%;
+  margin-left: -1rem;
+}
+
+/* ===== Parallax Emoji Zones ===== */
+
+.parallax-zone {
+  position: fixed;
+  width: 180px;
+  height: 180px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.parallax-top-left {
+  top: 10px;
+  left: 10px;
+}
+
+.parallax-top-right {
+  top: 10px;
+  right: 10px;
+}
+
+.parallax-bottom-left {
+  bottom: 10px;
+  left: 10px;
+}
+
+.parallax-bottom-right {
+  bottom: 10px;
+  right: 10px;
+}
+
+/* ===== Emoji Decorations ===== */
+
+.emoji-deco {
+  position: absolute;
+  font-size: 1.5rem;
+  opacity: 0.7;
+  z-index: 5;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.emoji-top-left {
+  top: 2rem;
+  left: 2rem;
+}
+
+.emoji-top-right {
+  top: 2rem;
+  right: 2rem;
+}
+
+.emoji-top-center {
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.emoji-bottom-left {
+  bottom: 2rem;
+  left: 2rem;
+}
+
+.emoji-bottom-right {
+  bottom: 2rem;
+  right: 2rem;
+}
+
+@media (max-width: 768px) {
+  .emoji-deco {
+    font-size: 1.2rem;
+  }
+
+  .emoji-top-left {
+    top: 1rem;
+    left: 1rem;
+  }
+
+  .emoji-top-right {
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .emoji-bottom-left {
+    bottom: 1rem;
+    left: 1rem;
+  }
+
+  .emoji-bottom-right {
+    bottom: 1rem;
+    right: 1rem;
+  }
+}
+
+/* Pointer events and selection utilities */
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.select-none {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* ===== Cute Cat Component ===== */
+
+.cute-cat {
+  position: fixed;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.cute-cat img {
+  width: 150px;
+  height: 150px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(255, 20, 147, 0.3);
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+/* Cat Positions - Far corners to avoid overlap */
+.cat-top-left {
+  top: 15px;
+  left: 15px;
+  z-index: 4;
+}
+
+.cat-top-right {
+  top: 15px;
+  right: 15px;
+  z-index: 4;
+}
+
+.cat-bottom-left {
+  bottom: 15px;
+  left: 15px;
+  z-index: 4;
+}
+
+.cat-bottom-right {
+  bottom: 15px;
+  right: 15px;
+  z-index: 4;
+}
+
+@media (max-width: 768px) {
+  .cute-cat img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .cat-top-left {
+    top: 1%;
+    left: 1%;
+  }
+
+  .cat-top-right {
+    top: 1%;
+    right: 1%;
+  }
+
+  .cat-bottom-left {
+    bottom: 1%;
+    left: 1%;
+  }
+
+  .cat-bottom-right {
+    bottom: 1%;
+    right: 1%;
+  }
+
+  .parallax-zone {
+    width: 140px;
+    height: 140px;
+  }
+
+  .parallax-top-left {
+    top: 5px;
+    left: 5px;
+  }
+
+  .parallax-top-right {
+    top: 5px;
+    right: 5px;
+  }
+
+  .parallax-bottom-left {
+    bottom: 5px;
+    left: 5px;
+  }
+
+  .parallax-bottom-right {
+    bottom: 5px;
+    right: 5px;
+  }
+}
+
+@media (max-width: 768px) {
+  .valentine-title {
+    font-size: 2.5rem;
+  }
+
+  .brochure-subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+/* ===== Buttons ===== */
+
+.primary-btn {
+  padding: 12px 28px;
+  border-radius: 30px;
+  border: none;
+  background: #ff4d6d;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.primary-btn:hover {
+  transform: scale(1.05);
+}
+
+.back-home-btn {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  padding: 10px 20px;
+  border-radius: 25px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #d63456;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 20;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.back-home-btn:hover {
+  background: white;
+  box-shadow: 0 8px 20px rgba(255, 20, 147, 0.3);
+  transform: scale(1.05);
+}
+
+/* ===== Intro ===== */
+
+.intro-subtitle {
+  margin: 1rem 0 2rem;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+/* ===== Story Level ===== */
+
+.progress-indicator {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+  z-index: 10;
+  position: relative;
+}
+
+.level-prompt {
+  margin-bottom: 2rem;
+  max-width: 600px;
+  color: #d63456;
+  font-weight: 600;
+  z-index: 10;
+  position: relative;
+}
+
+.choices-grid {
+  width: 100%;
+  max-width: 600px;
+  display: grid;
+  gap: 1rem;
+  z-index: 10;
+  position: relative;
+}
+
+/* ===== Choice Card ===== */
+
+.choice-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.choice-card:hover {
+  transform: translateY(-5px);
+}
+
+.choice-card img {
+  width: 100%;
+  border-radius: 15px;
+  margin-bottom: 1rem;
+}
+
+.choice-card p {
+  font-size: 0.95rem;
+}
+
+/* ===== Final Story ===== */
+
+.final-container h1 {
+  color: #d63456;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 4px rgba(214, 52, 86, 0.1);
+  z-index: 10;
+  position: relative;
+}
+
+.story-scroll {
+  width: 100%;
+  max-width: 600px;
+  margin-top: 2rem;
+  z-index: 10;
+  position: relative;
+}
+
+.story-chapter {
+  margin-bottom: 2rem;
+}
+
+.story-chapter img {
+  width: 100%;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+}
+
+.final-message {
+  margin-top: 3rem;
+  max-width: 600px;
+  z-index: 10;
+  position: relative;
+}
+
+.final-message h2 {
+  color: #d63456;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+/* ===== Mobile Enhancements ===== */
+
+@media (min-width: 768px) {
+  .choices-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ===== Valentine Question Page ===== */
+
+.valentine-question-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #fff5f8 0%, #ffe6f0 50%, #ffd9e8 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.valentine-question-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+}
+
+.valentine-question-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #d63456;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  text-shadow: 2px 2px 4px rgba(214, 52, 86, 0.1);
+}
+
+.valentine-question-title span {
+  background: linear-gradient(135deg, #ff1493, #ff69b4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-style: italic;
+}
+
+.valentine-question-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 2.5rem;
+  opacity: 0.85;
+}
+
+.valentine-buttons {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.yes-button,
+.no-button {
+  padding: 16px 40px;
+  border-radius: 30px;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.yes-button {
+  background: linear-gradient(135deg, #ff1493, #ff69b4);
+  color: white;
+}
+
+.yes-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 15px 35px rgba(255, 20, 147, 0.4);
+}
+
+.no-button {
+  background: #f0f0f0;
+  color: #333;
+  position: relative;
+  will-change: transform;
+}
+
+.no-button:hover {
+  background: #e0e0e0;
+}
+
+.locked-button {
+  padding: 16px 40px;
+  border-radius: 30px;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: #d0d0d0;
+  color: #999;
+  cursor: not-allowed;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  opacity: 0.6;
+}
+
+.floating-kitten-top,
+.floating-kitten-bottom {
+  position: absolute;
+  font-size: 4rem;
+  opacity: 0.6;
+  z-index: 1;
+}
+
+.floating-kitten-top {
+  top: 10%;
+  left: 5%;
+}
+
+.floating-kitten-bottom {
+  bottom: 10%;
+  right: 5%;
+}
+
+.floating-heart-static {
+  position: absolute;
+  font-size: 1.5rem;
+  opacity: 0.5;
+  animation: float-drift 6s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes float-drift {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  50% {
+    transform: translateY(-40px) translateX(-10px);
+  }
+  75% {
+    transform: translateY(-20px) translateX(10px);
+  }
+}
+
+@media (max-width: 768px) {
+  .valentine-question-title {
+    font-size: 2.5rem;
+  }
+
+  .valentine-buttons {
+    gap: 1.5rem;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .yes-button,
+  .no-button {
+    width: 100%;
+  }
+
+  .floating-kitten-top,
+  .floating-kitten-bottom {
+    font-size: 3rem;
+  }
+
+  .back-home-btn {
+    top: 1rem;
+    left: 1rem;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+
+  .level-prompt {
+    font-size: 1.5rem;
+  }
+
+  .story-scroll {
+    padding: 0 1rem;
+  }
+}
