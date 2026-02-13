@@ -6,82 +6,34 @@ export default function ValentineQuestion({ onYes }) {
   const [isMobile, setIsMobile] = useState(false);
   const noButtonRef = useRef(null);
   const containerRef = useRef(null);
-  const kittenSizesRef = useRef(null);
-  const kittenVelocitiesRef = useRef(null);
-  const kittenPositionsRef = useRef(null);
+  const kittenSizesRef = useRef([]);
+  const kittenVelocitiesRef = useRef([]);
+  const kittenAngularVelocitiesRef = useRef([]);
+  const kittenPositionsRef = useRef([]);
+  const cursorRef = useRef({ x: 0, y: 0, active: false, vx: 0, vy: 0, lastTs: 0 });
+  const cursorHeadingRef = useRef({ x: 0, y: -1 });
+  const rafRef = useRef(null);
+  const lastFrameTimeRef = useRef(null);
 
-  // Cursor position for magnet kittens
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const initialKittens = Array.from({ length: 150 }, (_, i) => {
+    const columns = 12;
+    const rows = 9;
+    const col = i % columns;
+    const row = Math.floor(i / columns);
+    return {
+      id: i,
+      left: 4 + (col * 92) / (columns - 1),
+      top: 5 + (row * 90) / (rows - 1),
+    };
+  });
 
-  // Kitten magnet initial layout (percent positions) - spread all over the page
-  const initialKittens = [
-    // Top-left area
-    { id: 0, left: 2, top: 5, depth: 1 },
-    { id: 1, left: 12, top: 2, depth: 0.9 },
-    { id: 2, left: 18, top: 18, depth: 1.2 },
-    
-    // Top-center area
-    { id: 3, left: 35, top: 8, depth: 1.1 },
-    { id: 4, left: 52, top: 12, depth: 1 },
-    { id: 5, left: 65, top: 5, depth: 0.85 },
-    
-    // Top-right area
-    { id: 6, left: 82, top: 10, depth: 0.95 },
-    { id: 7, left: 92, top: 2, depth: 1.1 },
-    { id: 8, left: 98, top: 20, depth: 1.3 },
-    
-    // Middle-left area
-    { id: 9, left: 5, top: 35, depth: 1.15 },
-    { id: 10, left: 8, top: 55, depth: 1.2 },
-    { id: 11, left: 3, top: 75, depth: 1.05 },
-    
-    // Middle-center area
-    { id: 12, left: 30, top: 38, depth: 1.25 },
-    { id: 13, left: 46, top: 50, depth: 1.1 },
-    { id: 14, left: 66, top: 42, depth: 0.9 },
-    
-    // Middle-right area
-    { id: 15, left: 88, top: 45, depth: 1.3 },
-    { id: 16, left: 95, top: 60, depth: 0.95 },
-    { id: 17, left: 98, top: 78, depth: 1.2 },
-    
-    // Bottom-left area
-    { id: 18, left: 10, top: 88, depth: 1.1 },
-    { id: 19, left: 22, top: 92, depth: 1.3 },
-    
-    // Bottom-center area
-    { id: 20, left: 45, top: 88, depth: 1.05 },
-    { id: 21, left: 58, top: 95, depth: 1.15 },
-    
-    // Bottom-right area
-    { id: 22, left: 75, top: 85, depth: 0.9 },
-    { id: 23, left: 88, top: 92, depth: 1.25 },
-  ];
-  
-  // Initialize random sizes (only once)
-  if (!kittenSizesRef.current) {
-    kittenSizesRef.current = initialKittens.map(() => 
-      Math.floor(Math.random() * 20) + 24 // Random size between 24-44px
-    );
+  if (kittenSizesRef.current.length === 0) {
+    kittenSizesRef.current = initialKittens.map(() => Math.floor(Math.random() * 20) + 24);
   }
 
   const kittenSizes = kittenSizesRef.current;
-
-  // Initialize kitten velocities and positions (only once)
-  if (!kittenVelocitiesRef.current) {
-    kittenVelocitiesRef.current = initialKittens.map(() => ({
-      vx: (Math.random() - 0.5) * 2, // Random velocity between -1 and 1
-      vy: (Math.random() - 0.5) * 2,
-    }));
-    kittenPositionsRef.current = initialKittens.map(k => ({
-      x: (k.left / 100) * window.innerWidth,
-      y: (k.top / 100) * window.innerHeight,
-    }));
-  }
-
-  // Dynamic offsets applied to each kitten (px)
-  const [kittenOffsets, setKittenOffsets] = useState(
-    new Array(24).fill(null).map(() => ({ x: 0, y: 0 }))
+  const [kittenPositions, setKittenPositions] = useState(
+    initialKittens.map(() => ({ x: 0, y: 0, angle: 0 }))
   );
 
   useEffect(() => {
@@ -93,6 +45,75 @@ export default function ValentineQuestion({ onYes }) {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const getObstacleRects = (containerRect) => {
+    const container = containerRef.current;
+    if (!container) return [];
+
+    const padding = 8;
+    return Array.from(container.querySelectorAll(".collision-obstacle")).map((node) => {
+      const rect = node.getBoundingClientRect();
+      return {
+        left: rect.left - containerRect.left - padding,
+        top: rect.top - containerRect.top - padding,
+        right: rect.right - containerRect.left + padding,
+        bottom: rect.bottom - containerRect.top + padding,
+      };
+    });
+  };
+
+  const resolveCircleRectCollision = (position, velocity, radius, rect) => {
+    const closestX = Math.max(rect.left, Math.min(position.x, rect.right));
+    const closestY = Math.max(rect.top, Math.min(position.y, rect.bottom));
+    const dx = position.x - closestX;
+    const dy = position.y - closestY;
+    const distanceSq = dx * dx + dy * dy;
+
+    if (distanceSq >= radius * radius) return false;
+
+    let nx = dx;
+    let ny = dy;
+    let distance = Math.sqrt(distanceSq);
+
+    if (distance < 0.001) {
+      const distancesToSides = [
+        Math.abs(position.x - rect.left),
+        Math.abs(position.x - rect.right),
+        Math.abs(position.y - rect.top),
+        Math.abs(position.y - rect.bottom),
+      ];
+      const minDistance = Math.min(...distancesToSides);
+      if (minDistance === distancesToSides[0]) {
+        nx = -1;
+        ny = 0;
+      } else if (minDistance === distancesToSides[1]) {
+        nx = 1;
+        ny = 0;
+      } else if (minDistance === distancesToSides[2]) {
+        nx = 0;
+        ny = -1;
+      } else {
+        nx = 0;
+        ny = 1;
+      }
+      distance = 1;
+    } else {
+      nx /= distance;
+      ny /= distance;
+    }
+
+    const penetration = radius - distance + 0.5;
+    position.x += nx * penetration;
+    position.y += ny * penetration;
+
+    const dot = velocity.vx * nx + velocity.vy * ny;
+    if (dot < 0) {
+      velocity.vx -= 2 * dot * nx;
+      velocity.vy -= 2 * dot * ny;
+    }
+
+    return true;
+  };
+
   const handleNoHover = (e) => {
     const button = noButtonRef.current;
     if (!button) return;
@@ -100,14 +121,11 @@ export default function ValentineQuestion({ onYes }) {
     const rect = button.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-
-    // Get cursor position
     const cursorX = e.clientX;
     const cursorY = e.clientY;
 
-    // Calculate direction away from cursor
     const angle = Math.atan2(centerY - cursorY, centerX - cursorX);
-    const distance = 150;
+    const distance = 300;
 
     const newX = Math.cos(angle) * distance;
     const newY = Math.sin(angle) * distance;
@@ -116,10 +134,34 @@ export default function ValentineQuestion({ onYes }) {
   };
 
   const handleMouseMove = (e) => {
+    const container = containerRef.current;
+    if (container) {
+      const containerRect = container.getBoundingClientRect();
+      const nextX = e.clientX - containerRect.left;
+      const nextY = e.clientY - containerRect.top;
+      const now = performance.now();
+      const prev = cursorRef.current;
+      const dt = Math.max((now - (prev.lastTs || now)) / 1000, 0.001);
+      const vx = (nextX - prev.x) / dt;
+      const vy = (nextY - prev.y) / dt;
+
+      cursorRef.current = {
+        x: nextX,
+        y: nextY,
+        active: true,
+        vx,
+        vy,
+        lastTs: now,
+      };
+
+      const speed = Math.hypot(vx, vy);
+      if (speed > 1) {
+        cursorHeadingRef.current = { x: vx / speed, y: vy / speed };
+      }
+    }
+
     const button = noButtonRef.current;
     if (!button) return;
-    // update cursor for kittens
-    setCursorPos({ x: e.clientX, y: e.clientY });
 
     const rect = button.getBoundingClientRect();
     const distance = Math.hypot(
@@ -127,93 +169,248 @@ export default function ValentineQuestion({ onYes }) {
       e.clientY - (rect.top + rect.height / 2)
     );
 
-    // If cursor is too close, make the button flee
     if (distance < 150) {
       handleNoHover(e);
     }
   };
 
-  // Animation loop for kitten magnets (lerp smoothing)
-  useEffect(() => {
-    let raf = null;
-    const lerp = (a, b, t) => a + (b - a) * t;
+  const handleMouseLeave = () => {
+    cursorRef.current.active = false;
+  };
 
-    const step = () => {
-      const container = containerRef.current;
-      if (!container) {
-        raf = requestAnimationFrame(step);
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const width = containerRect.width;
+    const height = containerRect.height;
+    const obstacles = getObstacleRects(containerRect);
+
+    if (kittenVelocitiesRef.current.length === 0) {
+      kittenVelocitiesRef.current = initialKittens.map(() => {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 28 + Math.random() * 30;
+        return {
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+        };
+      });
+      kittenAngularVelocitiesRef.current = initialKittens.map(
+        () => (Math.random() < 0.5 ? -1 : 1) * (4 + Math.random() * 10)
+      );
+    }
+
+    if (kittenPositionsRef.current.length === 0) {
+      kittenPositionsRef.current = initialKittens.map((kitten, idx) => {
+        const radius = kittenSizes[idx] / 2;
+        let x = (kitten.left / 100) * width;
+        let y = (kitten.top / 100) * height;
+
+        x = Math.max(radius, Math.min(width - radius, x));
+        y = Math.max(radius, Math.min(height - radius, y));
+
+        for (let attempt = 0; attempt < 30; attempt += 1) {
+          const collides = obstacles.some((rect) => {
+            const closestX = Math.max(rect.left, Math.min(x, rect.right));
+            const closestY = Math.max(rect.top, Math.min(y, rect.bottom));
+            const dx = x - closestX;
+            const dy = y - closestY;
+            return dx * dx + dy * dy < radius * radius;
+          });
+
+          if (!collides) break;
+
+          x = radius + Math.random() * Math.max(1, width - radius * 2);
+          y = radius + Math.random() * Math.max(1, height - radius * 2);
+        }
+
+        return { x, y, angle: Math.random() * 360 };
+      });
+      setKittenPositions(kittenPositionsRef.current);
+    }
+
+    const step = (time) => {
+      const currentContainer = containerRef.current;
+      if (!currentContainer) {
+        rafRef.current = requestAnimationFrame(step);
         return;
       }
 
-      const rect = container.getBoundingClientRect();
+      const rect = currentContainer.getBoundingClientRect();
+      const frameWidth = rect.width;
+      const frameHeight = rect.height;
+      const frameObstacles = getObstacleRects(rect);
 
-      const newOffsets = kittenOffsets.map((off, idx) => {
-        const k = initialKittens[idx];
-        const kittyX = rect.left + (k.left / 100) * rect.width;
-        const kittyY = rect.top + (k.top / 100) * rect.height;
+      if (lastFrameTimeRef.current == null) {
+        lastFrameTimeRef.current = time;
+      }
+      const dt = Math.min((time - lastFrameTimeRef.current) / 1000, 0.032);
+      lastFrameTimeRef.current = time;
 
-        const vx = cursorPos.x - kittyX;
-        const vy = cursorPos.y - kittyY;
-        const dist = Math.hypot(vx, vy);
+      const positions = kittenPositionsRef.current.map((p) => ({ ...p }));
+      const velocities = kittenVelocitiesRef.current;
+      const randomizeSpinOnBounce = (idx) => {
+        const current = kittenAngularVelocitiesRef.current[idx] || 0;
+        const currentDirection = current >= 0 ? 1 : -1;
+        const flipDirection = Math.random() < 0.45;
+        const nextDirection = flipDirection ? -currentDirection : currentDirection;
+        const nextSpeed = 5 + Math.random() * 18;
+        kittenAngularVelocitiesRef.current[idx] = nextDirection * nextSpeed;
+      };
 
-        // attraction falls off with distance
-        const maxDist = 600; // px - increased range
-        const strength = Math.max(0, (maxDist - dist) / maxDist);
+      positions.forEach((position, idx) => {
+        const velocity = velocities[idx];
+        const radius = kittenSizes[idx] / 2;
+        let bounced = false;
 
-        // depth influences how strongly each kitten is pulled
-        const pull = 60 * strength * (1 / k.depth); // increased force from 18 to 60
+        if (cursorRef.current.active) {
+          const heading = cursorHeadingRef.current;
+          const dirX = -heading.x;
+          const dirY = -heading.y;
+          const perpX = -dirY;
+          const perpY = dirX;
+          const lane = idx % 8;
+          const rank = Math.floor(idx / 8);
+          const tailDistance = 20 + rank * 16;
+          const laneOffset = (lane - 3.5) * 10;
+          const wave = Math.sin(time * 0.0016 + idx * 0.37) * 8;
+          const targetX = cursorRef.current.x + dirX * tailDistance + perpX * (laneOffset + wave);
+          const targetY = cursorRef.current.y + dirY * tailDistance + perpY * (laneOffset + wave);
+          const dx = targetX - position.x;
+          const dy = targetY - position.y;
+          const dist = Math.hypot(dx, dy);
 
-        const targetX = vx * (pull / (dist + 0.001));
-        const targetY = vy * (pull / (dist + 0.001));
+          if (dist > 0.001) {
+            const nx = dx / dist;
+            const ny = dy / dist;
+            const pull = Math.min(150, 24 + dist * 0.11);
+            velocity.vx += nx * pull * dt;
+            velocity.vy += ny * pull * dt;
+          }
+        }
 
-        // smooth the motion
-        const smoothT = 0.12;
-        return {
-          x: lerp(off.x, targetX, smoothT),
-          y: lerp(off.y, targetY, smoothT),
-        };
+        const drag = Math.pow(0.996, dt * 60);
+        velocity.vx *= drag;
+        velocity.vy *= drag;
+
+        position.x += velocity.vx * dt;
+        position.y += velocity.vy * dt;
+
+        if (position.x - radius <= 0) {
+          position.x = radius;
+          velocity.vx = Math.abs(velocity.vx);
+          bounced = true;
+        } else if (position.x + radius >= frameWidth) {
+          position.x = frameWidth - radius;
+          velocity.vx = -Math.abs(velocity.vx);
+          bounced = true;
+        }
+
+        if (position.y - radius <= 0) {
+          position.y = radius;
+          velocity.vy = Math.abs(velocity.vy);
+          bounced = true;
+        } else if (position.y + radius >= frameHeight) {
+          position.y = frameHeight - radius;
+          velocity.vy = -Math.abs(velocity.vy);
+          bounced = true;
+        }
+
+        frameObstacles.forEach((obstacleRect) => {
+          const hitObstacle = resolveCircleRectCollision(position, velocity, radius, obstacleRect);
+          if (hitObstacle) {
+            bounced = true;
+          }
+        });
+
+        if (bounced) randomizeSpinOnBounce(idx);
+
+        position.angle =
+          (position.angle + kittenAngularVelocitiesRef.current[idx] * dt) % 360;
       });
 
-      setKittenOffsets(newOffsets);
-      raf = requestAnimationFrame(step);
+      for (let i = 0; i < positions.length; i += 1) {
+        for (let j = i + 1; j < positions.length; j += 1) {
+          const dx = positions[j].x - positions[i].x;
+          const dy = positions[j].y - positions[i].y;
+          const dist = Math.hypot(dx, dy);
+          const minDist = kittenSizes[i] / 2 + kittenSizes[j] / 2;
+
+          if (dist > 0 && dist < minDist) {
+            const nx = dx / dist;
+            const ny = dy / dist;
+            const overlap = minDist - dist;
+
+            positions[i].x -= nx * (overlap / 2);
+            positions[i].y -= ny * (overlap / 2);
+            positions[j].x += nx * (overlap / 2);
+            positions[j].y += ny * (overlap / 2);
+
+            const rvx = velocities[j].vx - velocities[i].vx;
+            const rvy = velocities[j].vy - velocities[i].vy;
+            const speedAlongNormal = rvx * nx + rvy * ny;
+
+            if (speedAlongNormal < 0) {
+              const impulse = speedAlongNormal;
+              velocities[i].vx += impulse * nx;
+              velocities[i].vy += impulse * ny;
+              velocities[j].vx -= impulse * nx;
+              velocities[j].vy -= impulse * ny;
+              randomizeSpinOnBounce(i);
+              randomizeSpinOnBounce(j);
+            }
+          }
+        }
+      }
+
+      kittenPositionsRef.current = positions;
+      setKittenPositions(positions);
+      rafRef.current = requestAnimationFrame(step);
     };
 
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cursorPos]);
+    rafRef.current = requestAnimationFrame(step);
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+      lastFrameTimeRef.current = null;
+    };
+  }, []);
 
   return (
-    <div className="valentine-question-container" onMouseMove={handleMouseMove} ref={containerRef}>
-      {/* Magnetic Kitten Emojis - Background */}
+    <div
+      className="valentine-question-container"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      ref={containerRef}
+    >
       {initialKittens.map((kitten, idx) => (
         <motion.div
           key={`kitten-${kitten.id}`}
           className="magnetic-kitten"
           style={{
             position: "absolute",
-            left: `${kitten.left}%`,
-            top: `${kitten.top}%`,
+            left: `${kittenPositions[idx]?.x ?? 0}px`,
+            top: `${kittenPositions[idx]?.y ?? 0}px`,
             fontSize: `${kittenSizes[idx]}px`,
-            cursor: "pointer",
+            transform: `translate(-50%, -50%) rotate(${kittenPositions[idx]?.angle ?? 0}deg)`,
             userSelect: "none",
-            transform: `translate(${kittenOffsets[idx]?.x || 0}px, ${kittenOffsets[idx]?.y || 0}px)`,
-            transition: "transform 0.05s linear",
+            pointerEvents: "none",
             zIndex: 1,
           }}
         >
-          😻
+          {"\uD83D\uDE3B"}
         </motion.div>
       ))}
 
       <motion.div
-        className="valentine-question-content"
+        className="valentine-question-content collision-obstacle"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
         style={{ zIndex: 100 }}
       >
-        {/* Floating Hearts */}
         {[0, 1, 2, 3, 4].map((i) => (
           <motion.div
             key={`heart-float-${i}`}
@@ -224,7 +421,7 @@ export default function ValentineQuestion({ onYes }) {
               animationDelay: `${i * 0.3}s`,
             }}
           >
-            ❤️
+            {"\u2764\uFE0F"}
           </motion.div>
         ))}
 
@@ -245,7 +442,7 @@ export default function ValentineQuestion({ onYes }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          Let me show you something special... 💝
+          {"Let me show you something special... \uD83D\uDC9D"}
         </motion.p>
 
         <motion.div
@@ -257,14 +454,14 @@ export default function ValentineQuestion({ onYes }) {
           <button
             className="yes-button"
             onClick={onYes}
-            onMouseEnter={(e) =>
-              e.currentTarget.style.transform = "scale(1.1)"
-            }
-            onMouseLeave={(e) =>
-              e.currentTarget.style.transform = "scale(1)"
-            }
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "scale(1.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+            }}
           >
-            YES 💕
+            {"YES \uD83D\uDC95"}
           </button>
 
           {!isMobile ? (
@@ -281,11 +478,11 @@ export default function ValentineQuestion({ onYes }) {
                 damping: 10,
               }}
             >
-              NO 😢
+              {"NO \uD83D\uDE22"}
             </motion.button>
           ) : (
             <button className="locked-button" disabled>
-              🔐 Can't say NO yet
+              {"\uD83D\uDD10 Can't say NO yet"}
             </button>
           )}
         </motion.div>

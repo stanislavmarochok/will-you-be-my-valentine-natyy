@@ -501,9 +501,36 @@ body {
   position: relative;
   z-index: 10;
   text-align: center;
-  padding: 2rem;
+  padding: 2.4rem 2.2rem;
   max-width: 600px;
   width: 100%;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.75), transparent 50%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 228, 239, 0.62));
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 30px 70px rgba(214, 52, 86, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px) saturate(125%);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.valentine-question-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.35), transparent 45%),
+    radial-gradient(circle at 85% 120%, rgba(255, 105, 180, 0.18), transparent 42%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.valentine-question-content > * {
+  position: relative;
+  z-index: 1;
 }
 
 .valentine-question-title {
