@@ -89,7 +89,7 @@ function createLevel(seed) {
   return { start, walls, traps, items };
 }
 
-export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
+export default function BunnyCollectorGame({ onBack, onDevNext, onWin }) {
   const [seed, setSeed] = useState(() => Math.floor(Math.random() * 100000));
   const level = useMemo(() => createLevel(seed), [seed]);
 
@@ -267,9 +267,9 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
         <button
           type="button"
           className="bunny-dev-reset"
-          onClick={onResetProgress}
-          aria-label="Dev reset progresu"
-          title="Dev: reset progresu"
+          onClick={onDevNext}
+          aria-label="Dev dalsia hra"
+          title="Dev: dalsia hra"
         />
 
         <h2 className="bunny-title">Hra 2: Zajačik Zberá Spomienky</h2>
@@ -293,7 +293,6 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
                 const x = index % GRID_SIZE;
                 const y = Math.floor(index / GRID_SIZE);
                 const posKey = keyFor(x, y);
-                const isBunny = bunny.x === x && bunny.y === y;
                 const isWall = level.walls.has(posKey);
                 const isTrap = level.traps.has(posKey);
                 const item = level.items.find((photo) => photo.x === x && photo.y === y);
@@ -307,10 +306,16 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
                     {item && !isCollected && (
                       <img src={item.src} alt="" className="cell-photo-thumb" loading="lazy" />
                     )}
-                    {isBunny && <span className={`cell-bunny dir-${direction}`}>🐇</span>}
                   </div>
                 );
               })}
+              <span
+                className={`bunny-sprite dir-${direction}`}
+                style={{ "--bunny-x": bunny.x, "--bunny-y": bunny.y }}
+                aria-hidden="true"
+              >
+                🐇
+              </span>
             </div>
             {(resumeCountdown !== null || isPaused) && (
               <div className="bunny-board-overlay">

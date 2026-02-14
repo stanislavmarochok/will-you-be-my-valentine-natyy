@@ -1,0 +1,207 @@
+.german-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.2rem;
+  background: linear-gradient(130deg, #fff2f6 0%, #ffe4ef 55%, #ffd8e8 100%);
+}
+
+.german-content {
+  position: relative;
+  z-index: 10;
+  width: min(860px, 100%);
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 28px 64px rgba(214, 52, 86, 0.22);
+  backdrop-filter: blur(10px);
+  padding: 1.25rem 1.2rem 1.2rem;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.german-back-btn {
+  position: absolute;
+  top: 0.9rem;
+  left: 0.9rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(214, 52, 86, 0.25);
+  background: rgba(255, 255, 255, 0.92);
+  color: #d63456;
+  font-size: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.german-back-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(214, 52, 86, 0.2);
+}
+
+.german-dev-next {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 999px;
+  background: #d63456;
+  opacity: 0.02;
+  cursor: pointer;
+}
+
+.german-dev-next:hover {
+  opacity: 0.22;
+}
+
+.german-top {
+  margin-top: 0.15rem;
+  padding: 0 3.2rem 0 3.3rem;
+}
+
+.german-progress {
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  background: #f4cadb;
+  overflow: hidden;
+}
+
+.german-progress-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(135deg, #58cc02, #8de53d);
+  transition: width 0.25s ease;
+}
+
+.german-meta {
+  margin-top: 0.45rem;
+  display: flex;
+  justify-content: space-between;
+  color: #8a4665;
+  font-weight: 700;
+  font-size: 1.03rem;
+}
+
+.german-title {
+  margin-top: 0.9rem;
+  text-align: center;
+  color: #d63456;
+  font-size: 2.2rem;
+}
+
+.german-question {
+  margin-top: 0.7rem;
+  margin-bottom: 0.95rem;
+  text-align: center;
+  color: #573a4a;
+  font-weight: 700;
+  font-size: 1.18rem;
+}
+
+.german-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.55rem;
+}
+
+.german-option {
+  border-radius: 16px;
+  border: 1px solid rgba(214, 52, 86, 0.18);
+  background: rgba(255, 255, 255, 0.86);
+  color: #573a4a;
+  font-weight: 700;
+  text-align: left;
+  padding: 1rem 1.05rem;
+  font-size: 1.08rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.german-option:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 9px 18px rgba(214, 52, 86, 0.15);
+}
+
+.german-option.is-selected {
+  border-color: #ff5fa8;
+  background: #ffe7f2;
+}
+
+.german-option.is-correct {
+  border-color: #58cc02;
+  background: #eafad7;
+}
+
+.german-option.is-wrong {
+  border-color: #ff4b4b;
+  background: #ffe0e0;
+}
+
+.german-feedback {
+  margin-top: 0.7rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.08rem;
+  transition: opacity 0.2s ease;
+}
+
+.german-feedback.ok {
+  color: #3e8f04;
+}
+
+.german-feedback.bad {
+  color: #cc2f2f;
+}
+
+.german-state {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.german-state h3 {
+  color: #d63456;
+  margin-bottom: 0.35rem;
+  font-size: 1.35rem;
+}
+
+.german-state p {
+  color: #6d4f61;
+  font-size: 1.06rem;
+}
+
+.german-actions {
+  margin-top: 0.95rem;
+  display: flex;
+  justify-content: center;
+}
+
+.german-cta {
+  border: none;
+  border-radius: 999px;
+  padding: 0.88rem 1.35rem;
+  font-size: 1.07rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #58cc02, #8de53d);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(88, 204, 2, 0.26);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.german-cta:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(88, 204, 2, 0.34);
+  filter: saturate(1.08);
+}
+
+.german-cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
