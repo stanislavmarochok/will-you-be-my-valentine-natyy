@@ -101,6 +101,7 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
   const [deathFlash, setDeathFlash] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [resumeCountdown, setResumeCountdown] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   const directionRef = useRef(direction);
   const previewTimeoutRef = useRef(null);
@@ -124,6 +125,7 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
     setStatus("playing");
     setShowIntro(true);
     setResumeCountdown(null);
+    setIsPaused(false);
   }, [level]);
 
   useEffect(() => {
@@ -132,13 +134,14 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
       if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") setDirection("right");
       if (event.key === "ArrowDown" || event.key.toLowerCase() === "s") setDirection("down");
       if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") setDirection("left");
+      if (event.key.toLowerCase() === "p") setIsPaused((prev) => !prev);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
   useEffect(() => {
-    if (status !== "playing" || previewSrc || showIntro || resumeCountdown !== null) {
+    if (status !== "playing" || previewSrc || showIntro || resumeCountdown !== null || isPaused) {
       return undefined;
     }
 
@@ -163,6 +166,7 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
             setCollected([]);
             setPreviewSrc(null);
             setResumeCountdown(null);
+            setIsPaused(false);
             setStatus("playing");
             setDeathFlash(false);
           }, 1100);
@@ -191,7 +195,7 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
     }, TICK_MS);
 
     return () => window.clearInterval(interval);
-  }, [level, previewSrc, resumeCountdown, showIntro, status]);
+  }, [isPaused, level, previewSrc, resumeCountdown, showIntro, status]);
 
   useEffect(() => {
     if (resumeCountdown === null) return undefined;
@@ -282,12 +286,6 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
             {status === "playing" ? "hrá sa" : status === "dead" ? "ups..." : "výhra"}
           </span>
         </div>
-        {resumeCountdown !== null && (
-          <div className="bunny-countdown">
-            Zajačik sa pohne o <strong>{resumeCountdown}</strong>
-          </div>
-        )}
-
         {hasPhotos ? (
           <div className="bunny-board-wrap">
             <div className="bunny-board">
@@ -314,6 +312,19 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
                 );
               })}
             </div>
+            {(resumeCountdown !== null || isPaused) && (
+              <div className="bunny-board-overlay">
+                <div className="bunny-countdown">
+                  {resumeCountdown !== null ? (
+                    <>
+                      Zajačik sa pohne o <strong>{resumeCountdown}</strong>
+                    </>
+                  ) : (
+                    <>Pauza</>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="bunny-empty">Pridaj fotky do `src/assets/memory`, aby sa hra spustila.</div>
@@ -331,6 +342,9 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
           </button>
           <button type="button" onClick={() => setDirection("right")}>
             →
+          </button>
+          <button type="button" onClick={() => setIsPaused((prev) => !prev)}>
+            {isPaused ? "Pokračovať" : "Pauza"}
           </button>
         </div>
 
