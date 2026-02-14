@@ -255,7 +255,7 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
           onClick={onBack}
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.94 }}
-          aria-label="Back"
+          aria-label="Späť"
         >
           ←
         </motion.button>
@@ -264,24 +264,27 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
           type="button"
           className="bunny-dev-reset"
           onClick={onResetProgress}
-          aria-label="Dev reset progress"
-          title="Dev: reset progress"
+          aria-label="Dev reset progresu"
+          title="Dev: reset progresu"
         />
 
-        <h2 className="bunny-title">Game 2: Bunny Collector</h2>
+        <h2 className="bunny-title">Hra 2: Zajačik Zberá Spomienky</h2>
         <p className="bunny-subtitle">
-          Bunny keeps jumping. Change direction with arrows or WASD and collect all photos.
+          Zajačik stále skáče. Zmeň smer šípkami alebo WASD a pozbieraj všetky fotky.
         </p>
 
         <div className="bunny-stats">
           <span>
             Collected: {collected.length}/{level.items.length}
           </span>
-          <span>Status: {status === "playing" ? "playing" : status === "dead" ? "oops..." : "won"}</span>
+          <span>
+            Stav:{" "}
+            {status === "playing" ? "hrá sa" : status === "dead" ? "ups..." : "výhra"}
+          </span>
         </div>
         {resumeCountdown !== null && (
           <div className="bunny-countdown">
-            Bunny starts moving in <strong>{resumeCountdown}</strong>
+            Zajačik sa pohne o <strong>{resumeCountdown}</strong>
           </div>
         )}
 
@@ -313,7 +316,7 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
             </div>
           </div>
         ) : (
-          <div className="bunny-empty">Add photos to `src/assets/memory` to play this game.</div>
+          <div className="bunny-empty">Pridaj fotky do `src/assets/memory`, aby sa hra spustila.</div>
         )}
 
         <div className="bunny-controls">
@@ -331,7 +334,7 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
           </button>
         </div>
 
-        {status === "won" && <div className="bunny-win">You won. Moving to the next level...</div>}
+        {status === "won" && <div className="bunny-win">Vyhrala si. Presúvam ťa na ďalší level...</div>}
 
         {previewSrc && (
           <div className="pickup-preview">
@@ -344,14 +347,14 @@ export default function BunnyCollectorGame({ onBack, onResetProgress, onWin }) {
         {showIntro && (
           <div className="bunny-intro-overlay">
             <div className="bunny-intro-card">
-              <h3>Our photos are lost...</h3>
+              <h3>Naše fotky sa stratili...</h3>
               <p>
-                A magic bunny can collect them, but it needs your help.
+                Kúzelný zajačik ich vie pozbierať, ale potrebuje tvoju pomoc.
                 <br />
-                Guide the bunny and recover every photo.
+                Naveď ho správnym smerom a zachráň všetky spomienky.
               </p>
               <button type="button" onClick={() => setShowIntro(false)}>
-                Help the bunny
+                Pomôž zajačikovi
               </button>
             </div>
           </div>
