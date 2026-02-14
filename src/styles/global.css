@@ -542,6 +542,17 @@ body {
   text-shadow: 2px 2px 4px rgba(214, 52, 86, 0.1);
 }
 
+.valentine-name {
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  font-family: "Segoe Script", "Lucida Handwriting", "Brush Script MT", cursive;
+  font-size: 2.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #ff3f93;
+  text-shadow: 0 2px 10px rgba(255, 63, 147, 0.35);
+}
+
 .valentine-question-title span {
   background: linear-gradient(135deg, #ff1493, #ff69b4);
   -webkit-background-clip: text;
@@ -654,6 +665,10 @@ body {
 @media (max-width: 768px) {
   .valentine-question-title {
     font-size: 2.5rem;
+  }
+
+  .valentine-name {
+    font-size: 2.2rem;
   }
 
   .valentine-buttons {

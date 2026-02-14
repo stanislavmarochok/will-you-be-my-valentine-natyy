@@ -1,12 +1,11 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { motion } from "framer-motion";
-import CuteCat from "./CuteCat";
 import "../styles/auth.css";
 
 const ALLOWED_USERNAME = "Natália Kuľková";
-const CORRECT_PASSWORD = "Poprad";
+const CORRECT_PASSWORD = "4617";
 
-export default function AuthGate({ onSuccess, goHome }) {
+export default function AuthGate({ onSuccess, onBack }) {
   const [username, setUsername] = useState(ALLOWED_USERNAME);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -15,75 +14,41 @@ export default function AuthGate({ onSuccess, goHome }) {
     e.preventDefault();
 
     if (username !== ALLOWED_USERNAME) {
-      setError("Hmm… this place isn't for you 💌");
+      setError("Hmm... toto miesto nie je pre teba 💌");
       return;
     }
 
     if (password !== CORRECT_PASSWORD) {
-      setError("Not quite… try remembering your boyfriend's secret city! 🏔️");
+      setError("Ešte nie... spočítaj jej narodeniny s tvojimi 💕");
       return;
     }
 
     onSuccess();
   };
 
-  const floatingHearts = Array.from({ length: 8 }, (_, i) => i);
-
   return (
     <div className="auth-container">
-      {/* Cute Cat Images */}
-      <CuteCat position="top-right" />
-      <CuteCat position="bottom-left" />
-
-      {/* Emoji Decorations */}
-      <div className="emoji-deco emoji-top-left">💕 🐱 💖</div>
-      <div className="emoji-deco emoji-top-right">💗 😻 ✨</div>
-      <div className="emoji-deco emoji-bottom-right">💝 🎀 💑</div>
-
-      {/* Floating Hearts Background */}
-      {floatingHearts.map((i) => (
-        <motion.div
-          key={`heart-${i}`}
-          className="floating-heart"
-          initial={{ y: -50, x: Math.random() * 200 - 100, opacity: 0 }}
-          animate={{
-            y: window.innerHeight + 50,
-            opacity: [0, 1, 1, 0],
-          }}
-          transition={{
-            duration: 4 + Math.random() * 2,
-            delay: i * 0.3,
-            repeat: Infinity,
-          }}
-        >
-          ❤️
-        </motion.div>
-      ))}
-
-      {/* Back to Home Button */}
-      <motion.button
-        className="back-home-btn"
-        onClick={goHome}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        whileHover={{ scale: 1.1 }}
-      >
-        💕 Back Home
-      </motion.button>
-
       <motion.div
         className="auth-content"
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.6 }}
       >
-        <h1>For Your Eyes Only 💖</h1>
+        <motion.button
+          type="button"
+          className="auth-back-btn"
+          onClick={onBack}
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.94 }}
+          aria-label="Späť"
+        >
+          ←
+        </motion.button>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <input
             type="text"
-            placeholder="Your name"
+            placeholder="Vaše meno"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
@@ -92,15 +57,17 @@ export default function AuthGate({ onSuccess, goHome }) {
           <div className="password-field">
             <input
               type="password"
-              placeholder="Your boyfriend's secret identity password..."
+              placeholder="Heslo je súčet jej narodenín a tvojich narodenín..."
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <span className="password-hint">💡 Slovak city</span>
+            <span className="password-hint">💡 Hint: spočítaj narodeninové čísla (Nata ddmm + Stano ddmm)</span>
           </div>
 
-          <button type="submit">Unlock 🔓</button>
+          <button type="submit" className="auth-submit-btn">
+            Odomknúť 🔐
+          </button>
 
           {error && <p className="error">{error}</p>}
         </form>
