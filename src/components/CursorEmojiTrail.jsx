@@ -122,7 +122,7 @@ export default function CursorEmojiTrail() {
         position: "fixed",
         inset: 0,
         pointerEvents: "none",
-        zIndex: 2,
+        zIndex: 1,
         overflow: "hidden",
       }}
     >

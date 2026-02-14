@@ -1,0 +1,237 @@
+.memory-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: linear-gradient(130deg, #fff2f6 0%, #ffe4ef 55%, #ffd8e8 100%);
+}
+
+.memory-content {
+  position: relative;
+  z-index: 10;
+  width: min(960px, 100%);
+  min-height: calc(100vh - 2rem);
+  border-radius: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 28px 64px rgba(214, 52, 86, 0.22);
+  backdrop-filter: blur(10px);
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.memory-back-btn {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid rgba(214, 52, 86, 0.25);
+  background: rgba(255, 255, 255, 0.92);
+  color: #d63456;
+  font-size: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(214, 52, 86, 0.18);
+}
+
+.memory-dev-next {
+  position: absolute;
+  top: 0.9rem;
+  right: 1rem;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 999px;
+  background: #d63456;
+  opacity: 0.02;
+  cursor: pointer;
+  z-index: 11;
+}
+
+.memory-dev-next:hover {
+  opacity: 0.22;
+}
+
+.memory-title {
+  text-align: center;
+  font-size: 2.3rem;
+  color: #d63456;
+  margin-bottom: 0.4rem;
+}
+
+.memory-subtitle {
+  text-align: center;
+  color: #6d4f61;
+  margin-bottom: 0.9rem;
+}
+
+.memory-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  gap: var(--memory-gap, 10px);
+  width: min(100%, var(--memory-grid-width, 100%));
+}
+
+.memory-grid-wrap {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.memory-card {
+  position: relative;
+  width: var(--memory-card-width, 86px);
+  height: calc(var(--memory-card-width, 86px) * 1.25);
+  border: none;
+  border-radius: 16px;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  perspective: 900px;
+  transform-style: preserve-3d;
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
+    translateY(var(--lift, 0px));
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), filter 260ms ease;
+  filter: drop-shadow(0 8px 10px rgba(214, 52, 86, 0.1));
+  --glow-x: 50%;
+  --glow-y: 50%;
+}
+
+.memory-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  pointer-events: none;
+  background: radial-gradient(
+    140px circle at var(--glow-x) var(--glow-y),
+    rgba(255, 255, 255, 0.45),
+    rgba(255, 255, 255, 0) 70%
+  );
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.memory-card:hover::after {
+  opacity: 1;
+}
+
+.memory-card:hover {
+  z-index: 3;
+  filter: drop-shadow(0 16px 22px rgba(214, 52, 86, 0.22));
+}
+
+.memory-card-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  transform-style: preserve-3d;
+  transition: transform 0.62s cubic-bezier(0.22, 0.7, 0.16, 1);
+  will-change: transform;
+}
+
+.memory-card.is-flipped .memory-card-inner {
+  transform: rotateY(180deg);
+}
+
+.memory-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 12px 26px rgba(214, 52, 86, 0.18);
+}
+
+.memory-front {
+  transform: rotateY(180deg);
+  background: #fff;
+}
+
+.memory-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.memory-back {
+  font-size: 2rem;
+  background: linear-gradient(150deg, #ff6fa5, #ff2f85);
+  color: #fff;
+}
+
+.memory-empty {
+  text-align: center;
+  border-radius: 18px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.76);
+  color: #6d4f61;
+  border: 1px solid rgba(214, 52, 86, 0.16);
+}
+
+.memory-actions {
+  margin-top: 0.7rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.memory-reset-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #ff1493, #ff69b4);
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(255, 20, 147, 0.28);
+}
+
+.memory-win {
+  color: #c9184a;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .memory-container {
+    padding: 1rem;
+  }
+
+  .memory-content {
+    padding: 1rem;
+    border-radius: 24px;
+    min-height: calc(100vh - 1rem);
+  }
+
+  .memory-grid {
+    width: 100%;
+  }
+
+  .memory-title {
+    font-size: 1.8rem;
+    margin-top: 1.2rem;
+  }
+}
